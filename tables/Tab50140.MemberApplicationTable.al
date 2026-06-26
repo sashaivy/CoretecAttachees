@@ -59,7 +59,7 @@ table 50140 "Member Application Table"
         field(13; Country; Text[50])
         {
             Caption = 'Country';
-            TableRelation = "Country/Region".Name;
+            TableRelation = "Country/Region"; // using the "Country/Region" supp tbl
         }
         field(14; "Occupation Code"; Code[10])
         {

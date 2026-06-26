@@ -102,7 +102,6 @@ page 50140 "Member Application Card"
                 {
                     ToolTip = 'Specifies the value of the Approval Date field.', Comment = '%';
                     Editable = false;
-
                 }
                 field("Rejection Reason"; Rec."Rejection Reason")
                 {
@@ -129,8 +128,6 @@ page 50140 "Member Application Card"
                     Rec.Status := Rec.Status::Approved;
                     if Rec.Status = Rec.Status::Approved then begin
                         Rec."Approval Date" := CurrentDateTime.Date;
-                    end else begin
-                        Rec."Approval Date" := CalcDate('');
                     end;
                 end;
             }
@@ -139,7 +136,9 @@ page 50140 "Member Application Card"
                 trigger OnAction()
                 begin
                     Rec.Status := Rec.Status::Rejected;
-                    Rec."Approval Date" := CalcDate('');
+                    if Rec.Status = Rec.Status::Rejected then begin
+                        Rec."Approval Date" := 0D;
+                    end;
                 end;
             }
         }

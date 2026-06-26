@@ -7,6 +7,7 @@ page 50141 "Members List"
     PageType = List;
     SourceTable = "Member Application Table";
     UsageCategory = Lists;
+    CardPageId = "Member Application Card";
     
     layout
     {
