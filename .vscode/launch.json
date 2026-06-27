@@ -9,7 +9,7 @@
             "server": "http://bcserver",
             "serverInstance": "BC",
             "authentication": "UserPassword",
-            "startupObjectId": 50140,
+            "startupObjectId": 50141,
             "breakOnError": "All",
             "breakOnRecordWrite": "None",
             "launchBrowser": true,
@@ -20,7 +20,7 @@
             "tenant": "default",
             "usePublicURLFromServer": true,
             "useMcpServerForDebugging": true, 
-            "schemaUpdateMode": "Recreate"
+            "schemaUpdateMode": "ForceSync"
         },
         {
             "name": "Your own server",
@@ -38,7 +38,7 @@
             "enableSqlInformationDebugger": true,
             "tenant": "default",
             "usePublicURLFromServer": true,
-            "schemaUpdateMode": "Recreate"
+            "schemaUpdateMode": "ForceSync"
         }
     ]
 }

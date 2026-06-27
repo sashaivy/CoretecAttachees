@@ -1,11 +1,12 @@
 namespace CoretecAttachees.CoretecAttachees;
 
-page 50140 "Member Application Card"
+page 50142 "Member Single"
 {
     ApplicationArea = All;
-    Caption = 'Member Application';
+    Caption = 'Member Single';
     PageType = Card;
     SourceTable = "Member Application Table";
+    Editable = false;
     
     layout
     {
@@ -24,10 +25,6 @@ page 50140 "Member Application Card"
                 {
                     ToolTip = 'Specifies the value of the Status field.', Comment = '%';
                     Editable = false;
-                    // trigger OnValidate()
-                    // begin
-                    //     Rec.Status := varStatus;
-                    // end;
                 }
                 field("Application Date"; Rec."Application Date")
                 {
@@ -106,52 +103,8 @@ page 50140 "Member Application Card"
                 field("Rejection Reason"; Rec."Rejection Reason")
                 {
                     ToolTip = 'Specifies the value of the Rejection Reason field.', Comment = '%';
-                    Editable = Rec.Status = Rec.Status::Rejected;
+
                 }
-            }
-        }
-    }
-
-    actions
-    {
-        area(Promoted){
-            actionref("Approves"; Approve){}
-            actionref("Rejects"; Reject){}
-            actionref("Finish"; "Finish Application"){}
-        }
-        
-        area(Processing)
-        {
-            action(Approve){
-                Image = Approval;
-                trigger OnAction()
-                begin
-                    Rec.Status := Rec.Status::Approved;
-                    if Rec.Status = Rec.Status::Approved then begin
-                        Rec."Approval Date" := CurrentDateTime.Date;
-                    end;
-                end;
-            }
-            action(Reject){
-                Image = Reject;
-                trigger OnAction()
-                begin
-                    Rec.Status := Rec.Status::Rejected;
-                    if Rec.Status = Rec.Status::Rejected then begin
-                        Rec."Approval Date" := 0D;
-                    end;
-                end;
-            }
-
-            action("Finish Application")
-            {
-                Image = Completed;
-                trigger OnAction()
-                var
-                    memberApplicationHelper: Codeunit "Member Application Helper";
-                begin
-                    memberApplicationHelper.Run();
-                end;
             }
         }
     }
