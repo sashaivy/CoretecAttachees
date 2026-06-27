@@ -127,7 +127,7 @@ page 50140 "Member Application Card"
                 trigger OnAction()
                 begin
                     Rec.Status := Rec.Status::Approved;
-                    if Rec.Status = Rec.Status::Approved then begin
+                    // if Rec.Status = Rec.Status::Approved then begin
                         Rec."Approval Date" := CurrentDateTime.Date;
                     // end;
                 end;
