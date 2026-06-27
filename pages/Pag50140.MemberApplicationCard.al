@@ -81,7 +81,7 @@ page 50140 "Member Application Card"
                     ToolTip = 'Specifies the value of the Country field.', Comment = '%';
                 }
             }
-            group("Employement Information")
+            group("Employment Information")
             {
                 field("Occupation Code"; Rec."Occupation Code")
                 {
@@ -129,7 +129,7 @@ page 50140 "Member Application Card"
                     Rec.Status := Rec.Status::Approved;
                     if Rec.Status = Rec.Status::Approved then begin
                         Rec."Approval Date" := CurrentDateTime.Date;
-                    end;
+                    // end;
                 end;
             }
             action(Reject){
@@ -137,9 +137,10 @@ page 50140 "Member Application Card"
                 trigger OnAction()
                 begin
                     Rec.Status := Rec.Status::Rejected;
-                    if Rec.Status = Rec.Status::Rejected then begin
-                        Rec."Approval Date" := 0D;
-                    end;
+                    // if Rec.Status = Rec.Status::Rejected then begin
+                        // Rec."Approval Date" := 0D;
+                        Clear(Rec."Approval Date");
+                    // end;
                 end;
             }
 

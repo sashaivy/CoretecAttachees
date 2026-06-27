@@ -1,7 +1,7 @@
 table 50140 "Member Application Table"
 {
     Caption = 'Member Application Table';
-    DataClassification = ToBeClassified;
+    DataClassification = OrganizationIdentifiableInformation;
     
     fields
     {
@@ -32,19 +32,22 @@ table 50140 "Member Application Table"
         {
             Caption = 'Date of Birth';
         }
-        field(7; "ID/Passport Number"; Integer)
+        field(7; "ID/Passport Number"; Code[10])
         {
+            // datatype cannot be Int since it will drop leading zeros and fails to represent alphanumerics
             Caption = 'ID/Passport Number';
         }
-        field(8; "Phone Number"; Code[13])
+        field(8; "Phone Number"; Text[13])
         {
             Caption = 'Phone Number';
+            ExtendedDatatype = PhoneNo;
         }
-        field(9; Email; Code[50])
+        field(9; Email; Text[50])
         {
             Caption = 'Email';
+            ExtendedDatatype = EMail;
         }
-        field(10; Address; Code[50])
+        field(10; Address; Text[50])
         {
             Caption = 'Address';
         }
@@ -56,7 +59,7 @@ table 50140 "Member Application Table"
         {
             Caption = 'Postal Code';
         }
-        field(13; Country; Text[50])
+        field(13; Country; Code[10])
         {
             Caption = 'Country';
             TableRelation = "Country/Region"; // using the "Country/Region" supp tbl
@@ -72,7 +75,7 @@ table 50140 "Member Application Table"
         field(16; "Member Category"; Option)
         {
             Caption = 'Member Category';
-            OptionMembers = "","1", "2", "3";
+            OptionMembers = "Standard","Premium";
         }
         field(17; "Approval Date"; Date)
         {
