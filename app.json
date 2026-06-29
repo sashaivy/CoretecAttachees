@@ -1,6 +1,6 @@
 {
-  "id": "40d0e766-96ab-4196-9fcf-d1ac55ea99de",
-  "name": "ALProject10",
+  "id": "59f9bc2f-2d5b-4be8-9db5-33ed69e1d2b8",
+  "name": "SACCO",
   "publisher": "Default Publisher",
   "version": "1.0.0.0",
   "brief": "",
@@ -13,11 +13,11 @@
   "dependencies": [],
   "screenshots": [],
   "platform": "1.0.0.0",
-  "application": "26.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
-      "from": 50100,
-      "to": 50149
+      "from": 50349,
+      "to": 50360
     }
   ],
   "resourceExposurePolicy": {
