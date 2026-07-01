@@ -43,7 +43,7 @@ codeunit 50140 "Member Application Helper"
             end else begin
                 SendNotifications.RejectedApplicationEmail(MemberApplication.Email, MemberApplication."Rejection Reason");
             end;
-            MemberApplication.Delete();
+            // MemberApplication.Delete();
         end;
     end;
 
