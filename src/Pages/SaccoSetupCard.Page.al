@@ -1,4 +1,4 @@
-page 50202 "SACCO Setup Card"
+page 50203 "SACCO Setup Card"
 {
     PageType = Card;
     ApplicationArea = All;
@@ -17,6 +17,12 @@ page 50202 "SACCO Setup Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the number series code used to assign numbers to new member applications.';
+                }
+                //  EXPOSE THE NEW PERMANENT MEMBER SERIES FIELD
+                field("Member Nos."; Rec."Member Nos.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the number series code used to assign numbers to fully approved members.';
                 }
             }
         }

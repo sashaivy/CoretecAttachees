@@ -17,10 +17,41 @@ page 50201 "Member Application Card"
                     ApplicationArea = All;
                     AssistEdit = true;
                 }
+                field("No. Series"; Rec."No. Series") { ApplicationArea = All; }
+            }
+
+            group(Personal)
+            {
+                Caption = 'Personal Information';
+                field("Title"; Rec."Title") { ApplicationArea = All; }
                 field("First Name"; Rec."First Name") { ApplicationArea = All; }
+                field("Middle Name"; Rec."Middle Name") { ApplicationArea = All; }
                 field("Last Name"; Rec."Last Name") { ApplicationArea = All; }
+                field("Gender"; Rec."Gender") { ApplicationArea = All; }
+                field("Date of Birth"; Rec."Date of Birth") { ApplicationArea = All; }
+                field("Marital Status"; Rec."Marital Status") { ApplicationArea = All; }
+                field("Nationality"; Rec."Nationality") { ApplicationArea = All; }
+            }
+
+            group(Identification)
+            {
+                Caption = 'Identification';
+                field("Identification Type"; Rec."Identification Type") { ApplicationArea = All; }
                 field("ID/Passport No."; Rec."ID/Passport No.") { ApplicationArea = All; }
+                field("KRA PIN"; Rec."KRA PIN") { ApplicationArea = All; }
+                field("ID Issue Date"; Rec."ID Issue Date") { ApplicationArea = All; }
+                field("Passport Expiry Date"; Rec."Passport Expiry Date") { ApplicationArea = All; }
+            }
+
+            group(Contact)
+            {
+                Caption = 'Contact Information';
+                field("Phone No."; Rec."Phone No.") { ApplicationArea = All; }
                 field("Email"; Rec."Email") { ApplicationArea = All; }
+                field("Address"; Rec."Address") { ApplicationArea = All; }
+                field("City"; Rec."City") { ApplicationArea = All; }
+                field("County"; Rec."County") { ApplicationArea = All; }
+                field("Postal Code"; Rec."Postal Code") { ApplicationArea = All; }
             }
 
             group(Employment)
@@ -30,17 +61,32 @@ page 50201 "Member Application Card"
                 field("Employer Name"; Rec."Employer Name")
                 {
                     ApplicationArea = All;
+                    // Dynamically locks based on your new Custom Enum value assignment
                     Editable = (Rec."Employment Status" = Rec."Employment Status"::Employed);
                 }
                 field("Job Title"; Rec."Job Title") { ApplicationArea = All; }
+                field("Department"; Rec."Department") { ApplicationArea = All; }
+                field("Payroll No."; Rec."Payroll No.") { ApplicationArea = All; }
                 field("Monthly Gross Income"; Rec."Monthly Gross Income") { ApplicationArea = All; }
+            }
+
+            group(Membership)
+            {
+                Caption = 'Membership Information';
+                field("Membership Date"; Rec."Membership Date") { ApplicationArea = All; }
+                field("Branch Code"; Rec."Branch Code") { ApplicationArea = All; }
+                field("Member Category"; Rec."Member Category") { ApplicationArea = All; }
+                field("Introduced By"; Rec."Introduced By") { ApplicationArea = All; }
             }
 
             group(Financials)
             {
                 Caption = 'SACCO Membership Profile';
                 field("Monthly Contribution Target"; Rec."Monthly Contribution Target") { ApplicationArea = All; }
+                field("Opening Shares"; Rec."Opening Shares") { ApplicationArea = All; }
+                field("Initial Deposit"; Rec."Initial Deposit") { ApplicationArea = All; }
                 field("Dividend Payout Method"; Rec."Dividend Payout Method") { ApplicationArea = All; }
+                field("Risk Assessment Rating"; Rec."Risk Assessment Rating") { ApplicationArea = All; }
             }
 
             group(Beneficiaries)
@@ -51,14 +97,26 @@ page 50201 "Member Application Card"
                 field("Allocation %"; Rec."Allocation %") { ApplicationArea = All; }
             }
 
+            group(Emergency)
+            {
+                Caption = 'Emergency Contact';
+                field("Emergency Contact Name"; Rec."Emergency Contact Name") { ApplicationArea = All; }
+                field("Emergency Contact Phone"; Rec."Emergency Contact Phone") { ApplicationArea = All; }
+                field("Emergency Contact Relationship"; Rec."Emergency Contact Relationship") { ApplicationArea = All; }
+            }
+
             group(Approvals)
             {
                 Caption = 'Approval & Audit Trail';
                 field("Application Status"; Rec."Application Status") { ApplicationArea = All; }
+                field("Submitted By"; Rec."Submitted By") { ApplicationArea = All; }
+                field("Submitted Date"; Rec."Submitted Date") { ApplicationArea = All; }
                 field("Created By"; Rec."Created By") { ApplicationArea = All; }
                 field("Date Created"; Rec."Date Created") { ApplicationArea = All; }
                 field("Approved By"; Rec."Approved By") { ApplicationArea = All; }
                 field("Approval Date"; Rec."Approval Date") { ApplicationArea = All; }
+                field("Last Modified By"; Rec."Last Modified By") { ApplicationArea = All; }
+                field("Last Modified Date"; Rec."Last Modified Date") { ApplicationArea = All; }
                 field("Rejection Reason"; Rec."Rejection Reason")
                 {
                     ApplicationArea = All;
@@ -92,24 +150,27 @@ page 50201 "Member Application Card"
                     var
                         EmailMessage: Codeunit "Email Message";
                         Email: Codeunit "Email";
-                        TypeHelper: Codeunit "Type Helper"; // Fixes formatting
+                        TypeHelper: Codeunit "Type Helper";
+                        MemberAppMgt: Codeunit "Member Application Management";
                         Subject: Text;
                         Body: Text;
                         NewLine: Text;
                     begin
+                        // Execute field level validation constraints before prompting for approval confirmation
+                        MemberAppMgt.ValidateApplicationForApproval(Rec);
+
                         if Confirm('Are you sure you want to approve this application?', false) then begin
-                            // Updates your proper tracking fields
                             Rec."Application Status" := Rec."Application Status"::Approved;
                             Rec."Approved By" := UserId;
                             Rec."Approval Date" := Today;
                             Rec.Modify(true);
+                            MemberAppMgt.CreatePermanentMember(Rec);
 
                             if Rec.Email <> '' then begin
                                 NewLine := TypeHelper.NewLine();
                                 Subject := StrSubstNo('SACCO Application %1 - APPROVED', Rec."Application No.");
 
-                                // Refined email string concatenation using system line breaks
-                                Body := StrSubstNo('Dear %1 %2,', Rec."First Name", Rec."Last Name") + NewLine + NewLine +
+                                Body := StrSubstNo('Dear %1 %2 %3,', Rec."Title", Rec."First Name", Rec."Last Name") + NewLine + NewLine +
                                         StrSubstNo('We are pleased to inform you that your SACCO application %1 has been successfully approved!', Rec."Application No.") + NewLine + NewLine +
                                         'Regards,' + NewLine +
                                         'Management Team';
@@ -138,7 +199,7 @@ page 50201 "Member Application Card"
                     var
                         EmailMessage: Codeunit "Email Message";
                         Email: Codeunit "Email";
-                        TypeHelper: Codeunit "Type Helper"; // Fixes formatting
+                        TypeHelper: Codeunit "Type Helper";
                         Subject: Text;
                         Body: Text;
                         NewLine: Text;
@@ -151,8 +212,7 @@ page 50201 "Member Application Card"
                                 NewLine := TypeHelper.NewLine();
                                 Subject := StrSubstNo('SACCO Application %1 - REJECTED', Rec."Application No.");
 
-                                // Refined email string concatenation using system line breaks
-                                Body := StrSubstNo('Dear %1 %2,', Rec."First Name", Rec."Last Name") + NewLine + NewLine +
+                                Body := StrSubstNo('Dear %1 %2 %3,', Rec."Title", Rec."First Name", Rec."Last Name") + NewLine + NewLine +
                                         StrSubstNo('We regret to inform you that your SACCO application %1 has been rejected.', Rec."Application No.") + NewLine + NewLine +
                                         'Regards,' + NewLine +
                                         'Management Team';
@@ -169,4 +229,3 @@ page 50201 "Member Application Card"
         }
     }
 }
-

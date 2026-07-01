@@ -1,25 +1,23 @@
-# AL packages
+# AL dependencies
 .alpackages/
 
-# VS Code cache
-.vscode/.alcache/
-
-# Visual Studio
-.vs/
-
-# Build output
-bin/
-obj/
-
-# AL app packages
+# AL package output
 *.app
 
 # Snapshots
 .snapshots/
 
+# VS Code
+.vscode/.alcache/
+
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+
 # Temporary files
 *.tmp
-
-# OS files
 Thumbs.db
 .DS_Store

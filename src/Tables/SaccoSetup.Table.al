@@ -15,6 +15,13 @@ table 50200 "SACCO Setup"
             TableRelation = "No. Series";
             Caption = 'Member Application Nos.';
         }
+        //  NEW FIELD FOR PERMANENT MEMBERS
+        field(3; "Member Nos."; Code[20])
+        {
+            DataClassification = ToBeClassified;
+            TableRelation = "No. Series";
+            Caption = 'Member Nos.';
+        }
     }
 
     keys
