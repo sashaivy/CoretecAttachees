@@ -147,13 +147,25 @@ page 50140 "Member Application Card"
             action("Finish Application")
             {
                 Image = Completed;
+                Enabled = not isEnabled;
                 trigger OnAction()
                 var
-                    memberApplicationHelper: Codeunit "Member Application Helper";
+                    MemberApplicationHelper: Codeunit "Member Application Helper";
                 begin
-                    memberApplicationHelper.Run();
+                    MemberApplicationHelper.RegisterMember(Rec."Application ID");
+                    isEnabled:= true;
                 end;
             }
         }
     }
+
+    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
+    var
+        myInt: Integer;
+    begin
+        Rec."Application Date" := Today;
+    end;
+    
+    var
+        isEnabled : Boolean;
 }

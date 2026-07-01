@@ -1,24 +1,16 @@
-table 50140 "Member Application Table"
+table 50141 "Member Table"
 {
     Caption = 'Member Application Table';
     DataClassification = OrganizationIdentifiableInformation;
     
     fields
     {
-        field(1; "Application ID"; Integer)
+        field(1; "MemberNo"; Code[20])
         {
-            Caption = 'Application ID';
-            AutoIncrement = true;
-            MinValue = 1001;
         }
         field(2; "Application Date"; Date)
         {
             Caption = 'Application Date';
-        }
-        field(3; Status; Option)
-        {
-            Caption = 'Status';
-            OptionMembers = Pending, Approved, Rejected;
         }
         field(4; "First Name"; Text[20])
         {
@@ -81,14 +73,10 @@ table 50140 "Member Application Table"
         {
             Caption = 'Approval Date';
         }
-        field(18; "Rejection Reason"; Text[100])
-        {
-            Caption = 'Rejection Reason';
-        }
     }
     keys
     {
-        key(PK; "Application ID")
+        key(PK; "MemberNo")
         {
             Clustered = true;
         }
