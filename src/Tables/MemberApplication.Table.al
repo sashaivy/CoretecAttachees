@@ -89,7 +89,11 @@ table 50201 "Member Application"
         // 6. Membership Information (IDs 80 - 99)
         // ==========================================
         field(80; "Membership Date"; Date) { DataClassification = ToBeClassified; }
-        field(81; "Branch Code"; Code[20]) { DataClassification = ToBeClassified; }
+        field(81; "Branch Code"; Code[20])
+        {
+            DataClassification = ToBeClassified;
+            TableRelation = "Sacco Branch"."Branch Code";
+        }
         field(82; "Member Category"; Enum "Membership Type") { DataClassification = ToBeClassified; } // Updated to Enum
         field(83; "Introduced By"; Code[20]) { DataClassification = ToBeClassified; }
 

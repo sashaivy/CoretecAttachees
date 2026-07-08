@@ -139,7 +139,7 @@ page 50201 "Member Application Card"
                 {
                     ApplicationArea = All;
                     Caption = 'Approve';
-                    ToolTip = 'Approve this member application and send an email notification.';
+                    ToolTip = 'Approve this member application and generate a permanent member card.';
                     Image = Approve;
                     Promoted = true;
                     PromotedCategory = Process;
@@ -148,13 +148,7 @@ page 50201 "Member Application Card"
 
                     trigger OnAction()
                     var
-                        EmailMessage: Codeunit "Email Message";
-                        Email: Codeunit "Email";
-                        TypeHelper: Codeunit "Type Helper";
                         MemberAppMgt: Codeunit "Member Application Management";
-                        Subject: Text;
-                        Body: Text;
-                        NewLine: Text;
                     begin
                         // Execute field level validation constraints before prompting for approval confirmation
                         MemberAppMgt.ValidateApplicationForApproval(Rec);
@@ -164,22 +158,11 @@ page 50201 "Member Application Card"
                             Rec."Approved By" := UserId;
                             Rec."Approval Date" := Today;
                             Rec.Modify(true);
+
+                            // This codeunit function now handles creating the member AND sending the welcome email!
                             MemberAppMgt.CreatePermanentMember(Rec);
 
-                            if Rec.Email <> '' then begin
-                                NewLine := TypeHelper.NewLine();
-                                Subject := StrSubstNo('SACCO Application %1 - APPROVED', Rec."Application No.");
-
-                                Body := StrSubstNo('Dear %1 %2 %3,', Rec."Title", Rec."First Name", Rec."Last Name") + NewLine + NewLine +
-                                        StrSubstNo('We are pleased to inform you that your SACCO application %1 has been successfully approved!', Rec."Application No.") + NewLine + NewLine +
-                                        'Regards,' + NewLine +
-                                        'Management Team';
-
-                                EmailMessage.Create(Rec.Email, Subject, Body, true);
-                                Email.Send(EmailMessage);
-                            end;
-
-                            Message('Application approved and notification sent successfully.');
+                            Message('Application approved successfully.');
                         end;
                     end;
                 }
@@ -196,30 +179,10 @@ page 50201 "Member Application Card"
                     Enabled = (Rec."Application Status" = Rec."Application Status"::Open) or (Rec."Application Status" = Rec."Application Status"::Pending);
 
                     trigger OnAction()
-                    var
-                        EmailMessage: Codeunit "Email Message";
-                        Email: Codeunit "Email";
-                        TypeHelper: Codeunit "Type Helper";
-                        Subject: Text;
-                        Body: Text;
-                        NewLine: Text;
                     begin
                         if Confirm('Are you sure you want to reject this application?', false) then begin
                             Rec."Application Status" := Rec."Application Status"::Rejected;
                             Rec.Modify(true);
-
-                            if Rec.Email <> '' then begin
-                                NewLine := TypeHelper.NewLine();
-                                Subject := StrSubstNo('SACCO Application %1 - REJECTED', Rec."Application No.");
-
-                                Body := StrSubstNo('Dear %1 %2 %3,', Rec."Title", Rec."First Name", Rec."Last Name") + NewLine + NewLine +
-                                        StrSubstNo('We regret to inform you that your SACCO application %1 has been rejected.', Rec."Application No.") + NewLine + NewLine +
-                                        'Regards,' + NewLine +
-                                        'Management Team';
-
-                                EmailMessage.Create(Rec.Email, Subject, Body, true);
-                                Email.Send(EmailMessage);
-                            end;
 
                             Message('Application has been rejected.');
                         end;
@@ -229,3 +192,4 @@ page 50201 "Member Application Card"
         }
     }
 }
+

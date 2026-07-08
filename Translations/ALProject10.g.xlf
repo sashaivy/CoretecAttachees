@@ -443,6 +443,16 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table Member Application - Field Title - Property Caption</note>
         </trans-unit>
+        <trans-unit id="Table 182331723 - Field 3057995523 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Branch Code</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Sacco Branch - Field Branch Code - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Table 182331723 - Field 2961552353 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Name</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Table Sacco Branch - Field Name - Property Caption</note>
+        </trans-unit>
         <trans-unit id="Table 2642829542 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>SACCO Setup</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -462,6 +472,21 @@
           <source>Primary Key</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Table SACCO Setup - Field Primary Key - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1896269682 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sacco Branch List</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Branch List - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Page 1896269682 - Control 3004954119 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the unique identifier for the branch.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Branch List - Control Code - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="Page 1896269682 - Control 2961552353 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Specifies the full description name of the branch.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Page Branch List - Control Name - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="Page 297317106 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
           <source>New Member Application</source>
@@ -524,7 +549,7 @@
           <note from="Xliff Generator" annotates="general" priority="3">Page Member Application Card - Action Approval Actions - Property Caption</note>
         </trans-unit>
         <trans-unit id="Page 297317106 - Action 803889193 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Approve this member application and send an email notification.</source>
+          <source>Approve this member application and generate a permanent member card.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Page Member Application Card - Action Approve - Property ToolTip</note>
         </trans-unit>

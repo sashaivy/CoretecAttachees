@@ -93,4 +93,45 @@ codeunit 50201 "Member Application Management"
         // Pop up confirmation showing the newly generated identification tracking number
         Message('Permanent profile created successfully! Assigned Member Number: %1', MemberRecord."No.");
     end;
+
+    // -------------------------------------------------------
+    // SendWelcomeEmailToMember
+    // -------------------------------------------------------
+    // PURPOSE: Sends a welcome/registration email to the member
+    //          when they are created from an approved application.
+    // -------------------------------------------------------
+    local procedure SendWelcomeEmailToMember(Member: Record "Member")
+    var
+        EmailMessage: Codeunit "Email Message";
+        Email: Codeunit Email;
+        Subject: Text[100];
+        Body: Text;
+        FullName: Text;
+    begin
+        // Skip if member has no email address or first name
+        if (Member.Email = '') or (Member."First Name" = '') then
+            exit;
+
+        // 1. Dynamically compile the full name
+        if Member."Middle Name" <> '' then
+            FullName := StrSubstNo('%1 %2 %3', Member."First Name", Member."Middle Name", Member."Last Name")
+        else
+            FullName := StrSubstNo('%1 %2', Member."First Name", Member."Last Name");
+
+        // 2. Build the email content (use HTML for line breaks)
+        Subject := 'Welcome to the SACCO - Registration Confirmed';
+        Body := 'Dear ' + FullName + ',<br/><br/>';
+        Body += 'Congratulations! Your membership has been approved.<br/>';
+        Body += 'Your Member ID is: ' + Member."No." + '<br/><br/>';
+        Body += 'You can now access your account and apply for loans.<br/><br/>';
+        Body += 'Best regards,<br/>';
+        Body += 'The SACCO Team';
+
+        // Create the email message (true = HTML formatted body)
+        EmailMessage.Create(Member.Email, Subject, Body, true);
+
+        // Send the email (uses default Email Account from BC setup)
+        if not Email.Send(EmailMessage) then
+            Message('Member created successfully, but the welcome email could not be sent. Please check Email Account setup (search "Email Accounts").');
+    end;
 }
