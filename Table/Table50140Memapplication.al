@@ -34,26 +34,13 @@ table 50140 "Member Application"
                 validatepersonname("Last Name", 'Last Name');
             end;
         }
-        field(50; "Date of Birth"; Date)
+        field(50; "Date of Birth"; Text[30])
         {
             Caption = 'Date of Birth';
 
             trigger OnValidate()
-            var
-                MemberApplicationSetup: Record "Member Application Setup";
             begin
-                if "Date of Birth" = 0D then
-                    exit;
-
-                if not MemberApplicationSetup.Get('DEFAULT') then begin
-                    MemberApplicationSetup.Init();
-                    MemberApplicationSetup."Primary Key" := 'DEFAULT';
-                    MemberApplicationSetup."Minimum Age" := 18;
-                    MemberApplicationSetup.Insert();
-                end;
-
-                if "Date of Birth" > CalcDate(StrSubstNo('<-%1Y>', MemberApplicationSetup."Minimum Age"), Today) then
-                    Error('Applicant must be at least %1 years old.', MemberApplicationSetup."Minimum Age");
+                ValidateDateOfBirth("Date of Birth");
             end;
         }
         field(51; "Identificationtype"; option)
@@ -147,8 +134,33 @@ table 50140 "Member Application"
     begin
         Status := Status::Pending;
         "Application Date" := Today;
-        if "Application ID" = '' then
+        if ("Application ID" = '') and (("First Name" <> '') or ("Last Name" <> '') or ("National ID/Passport Number" <> '') or (Email <> '') or ("Phone Number" <> '')) then
             "Application ID" := AppNoMgt.GetNextNo();
+    end;
+
+    local procedure ValidateDateOfBirth(DobText: Text[30])
+    var
+        MemberApplicationSetup: Record "Member Application Setup";
+        BirthDate: Date;
+    begin
+        if DobText = '' then
+            exit;
+
+        if not Evaluate(BirthDate, DobText) then
+            Error('Enter a valid date in DD/MM/YYYY format.');
+
+        if BirthDate > Today then
+            Error('Date of birth cannot be in the future.');
+
+        if not MemberApplicationSetup.Get('DEFAULT') then begin
+            MemberApplicationSetup.Init();
+            MemberApplicationSetup."Primary Key" := 'DEFAULT';
+            MemberApplicationSetup."Minimum Age" := 18;
+            MemberApplicationSetup.Insert();
+        end;
+
+        if BirthDate > CalcDate(StrSubstNo('<-%1Y>', MemberApplicationSetup."Minimum Age"), Today) then
+            Error('Applicant must be at least %1 years old.', MemberApplicationSetup."Minimum Age");
     end;
 
     local procedure validatepersonname(Name: Text[20]; FieldName: Text[20])

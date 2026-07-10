@@ -40,7 +40,7 @@ page 50140 "Member Application Card"
                 }
                 field("Date of Birth"; rec."Date of Birth")
                 {
-                    Tooltip = 'Enter the date of birth of the applicant.';
+                    Tooltip = 'Enter the date of birth of the applicant in DD/MM/YYYY format.';
                 }
                 //field("ID/Passport Number"; rec."ID/Passport Number")
                 field("Identificationtype"; rec."Identificationtype")
