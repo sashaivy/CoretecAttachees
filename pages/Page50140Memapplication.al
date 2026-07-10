@@ -42,7 +42,12 @@ page 50140 "Member Application Card"
                 {
                     Tooltip = 'Enter the date of birth of the applicant.';
                 }
-                field("ID/Passport Number"; rec."ID/Passport Number")
+                //field("ID/Passport Number"; rec."ID/Passport Number")
+                field("Identificationtype"; rec."Identificationtype")
+                {
+                    Tooltip = 'Select the identification type of the applicant.';
+                }
+                field("National ID/Passport Number"; rec."National ID/Passport Number")
                 {
                     Tooltip = 'Enter the ID or passport number without omissions.';
                 }

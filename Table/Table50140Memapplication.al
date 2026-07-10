@@ -20,10 +20,19 @@ table 50140 "Member Application"
         field(30; "First Name"; Text[20])
         {
             Caption = 'First Name';
+            trigger OnValidate()
+            begin
+                validatepersonname("First Name", 'First Name');
+            end;
+
         }
         field(40; "Last Name"; Text[20])
         {
             Caption = 'Last Name';
+            trigger OnValidate()
+            begin
+                validatepersonname("Last Name", 'Last Name');
+            end;
         }
         field(50; "Date of Birth"; Date)
         {
@@ -47,19 +56,30 @@ table 50140 "Member Application"
                     Error('Applicant must be at least %1 years old.', MemberApplicationSetup."Minimum Age");
             end;
         }
-        //  field(51; "Identificationtype"; options)
-        // {
-        // OptionMembers = "National ID", "Passport Number"
-        // caption = 'Identification type'
-        // DataClassification = ToBeClassified;
-        //}
-        // field(52; "National ID/Passport Number"; Code[20])
-        //{
-        // DataClassification = ToBeClassified;
-        // }
-        field(60; "ID/Passport Number"; Code[10])
+        field(51; "Identificationtype"; option)
         {
+            OptionMembers = "National ID","Passport Number";
+            Caption = 'Identification type';
+            DataClassification = ToBeClassified;
+        }
+        field(52; "National ID/Passport Number"; Code[20])
+        {
+            DataClassification = ToBeClassified;
             Caption = 'ID/Passport Number';
+            trigger OnValidate()
+            begin
+                validateIdentification("National ID/Passport Number", 'Identificationtype');
+            end;
+            // }
+            //field(60; "ID/Passport Number"; Code[10])
+            // {
+            // trigger OnValidate()
+            //var
+            // ValidateID: Codeunit "Validate ID";
+            //begin
+            //ValidateID.ValidateIdentification(Rec);
+            // end;
+            //}
         }
         field(70; "Phone Number"; Text[13])
         {
@@ -88,18 +108,20 @@ table 50140 "Member Application"
             Caption = 'Country';
             TableRelation = "Country/Region";
         }
-        field(130; "Occupation Code"; Code[10])
+        field(130; "Occupation Code"; Option)
         {
             Caption = 'Occupation Code';
+            OptionMembers = "Unemployed","Employed","Self-Employed","Student","Retired ","Other";
         }
         field(140; "Annual Income"; Decimal)
         {
             Caption = 'Annual Income';
+            decimalPlaces = 2 : 2;
         }
         field(150; "Member Category"; Option)
         {
             Caption = 'Member Category';
-            OptionMembers = "Standard","Premium";
+            OptionMembers = "Standard","Premium","Gold","Platinum";
         }
         field(160; "Approval Date"; Date)
         {
@@ -127,5 +149,70 @@ table 50140 "Member Application"
         "Application Date" := Today;
         if "Application ID" = '' then
             "Application ID" := AppNoMgt.GetNextNo();
+    end;
+
+    local procedure validatepersonname(Name: Text[20]; FieldName: Text[20])
+    var
+        i: Integer;
+        Character: Char;
+        PreviousCharacter: Char;
+    begin
+        Name := DelChr(Name, '<>', '.');
+        Name := DelChr(Name, '<>');
+        if Name = '' then
+            Error('%1 cannot be empty.', FieldName);
+        PreviousCharacter := ' ';
+        for i := 1 to StrLen(Name) do begin
+            Character := Name[i];
+            if not (Character in ['A' .. 'Z', 'a' .. 'z', ' ', '-']) then
+                Error('%1 can contain only letters, spaces, and hyphens.', FieldName);
+            if (Character = ' ') and (PreviousCharacter = ' ') then
+                Error('%1 cannot contain consecutive spaces.', FieldName);
+            PreviousCharacter := Character;
+            continue;
+        end;
+        case Character of
+            '-':
+                begin
+                    if (Character = '-') and (PreviousCharacter = '-') then
+                        Error('%1 cannot contain consecutive hyphens.', FieldName);
+                end;
+            '''':
+                begin
+                    if (Character = '''') and (PreviousCharacter = '''') then
+                        Error('%1 cannot contain consecutive apostrophes.', FieldName);
+                end;
+            else
+                error('%1 contains an invalid character: %2.', FieldName, Character);
+        end;
+    end;
+
+    local procedure ValidateIdentification(IdentificationNumber: Text[20]; FieldName: Text[20])
+    var
+        i: Integer;
+    begin
+        case Identificationtype of
+            "IdentificationType"::"National ID":
+                begin
+                    ///Length check
+                    if (StrLen("IdentificationNumber") <> 7) and
+                     (StrLen("IdentificationNumber") <> 8) then
+                        Error('A National ID must contain 7 or 8 digits.');
+
+                    //Digits only
+                    for i := 1 to StrLen("IdentificationNumber") do
+                        if not ("IdentificationNumber"[i] in ['0' .. '9']) then
+                            Error('A National ID can contain digits only.');
+                end;
+
+            "IdentificationType"::"Passport Number":
+                begin
+                    if StrLen("IdentificationNumber") < 6 then
+                        Error('Enter a valid passport number.');
+                    for i := 1 to StrLen("IdentificationNumber") do
+                        if not ("IdentificationNumber"[i] in ['A' .. 'Z', 'a' .. 'z', '0' .. '9']) then
+                            Error('A Passport Number can contain letters and digits only.');
+                end;
+        end;
     end;
 }
