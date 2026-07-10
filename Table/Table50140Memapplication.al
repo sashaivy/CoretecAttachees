@@ -195,8 +195,7 @@ table 50140 "Member Application"
             "IdentificationType"::"National ID":
                 begin
                     ///Length check
-                    if (StrLen("IdentificationNumber") <> 7) and
-                     (StrLen("IdentificationNumber") <> 8) then
+                    if not (StrLen("IdentificationNumber") in [7, 8]) then
                         Error('A National ID must contain 7 or 8 digits.');
 
                     //Digits only
