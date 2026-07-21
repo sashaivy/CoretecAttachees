@@ -5,7 +5,13 @@ table 50140 "Member Application"
 
     fields
     {
-        field(1; "Application ID"; Code[12])
+        field(1; "Number"; Integer)
+        {
+            MinValue = 1;
+            AutoIncrement = true;
+            DataClassification = ToBeClassified;
+        }
+        field(5; "Application ID"; Code[12])
         {
             Caption = 'Application ID';
         }
@@ -34,14 +40,13 @@ table 50140 "Member Application"
                 validatepersonname("Last Name", 'Last Name');
             end;
         }
-        field(50; "Date of Birth"; Text[30])
+        field(50; "Date of Birth"; Text[8])
         {
             Caption = 'Date of Birth';
-
-            trigger OnValidate()
-            begin
-                ValidateDateOfBirth("Date of Birth");
-            end;
+            // trigger OnValidate()
+            // begin
+            // ValidateDateOfBirth("Date of Birth");
+            // end;
         }
         field(51; "Identificationtype"; option)
         {
@@ -53,21 +58,22 @@ table 50140 "Member Application"
         {
             DataClassification = ToBeClassified;
             Caption = 'ID/Passport Number';
+
             trigger OnValidate()
             begin
                 validateIdentification("National ID/Passport Number", 'Identificationtype');
             end;
-            // }
-            //field(60; "ID/Passport Number"; Code[10])
-            // {
-            // trigger OnValidate()
-            //var
-            // ValidateID: Codeunit "Validate ID";
-            //begin
-            //ValidateID.ValidateIdentification(Rec);
-            // end;
-            //}
         }
+        //field(60; "ID/Passport Number"; Code[10])
+        // {
+        // trigger OnValidate()
+        //var
+        // ValidateID: Codeunit "Validate ID";
+        //begin
+        //ValidateID.ValidateIdentification(Rec);
+        //end;
+        //}
+        //}
         field(70; "Phone Number"; Text[13])
         {
             Caption = 'Phone Number';
@@ -85,15 +91,30 @@ table 50140 "Member Application"
         field(100; City; Text[20])
         {
             Caption = 'City';
+            TableRelation = "Post code".City;
+            //trigger OnValidate()
+            //  begin
+            //ValidateCity();
+            //  end;
         }
         field(110; "Postal Code"; Code[10])
         {
             Caption = 'Postal Code';
+            TableRelation = "Post Code";
+            // trigger OnValidate()
+            // begin
+            // ValidatePostalCode();
+            // end;
         }
         field(120; Country; Code[10])
         {
             Caption = 'Country';
             TableRelation = "Country/Region";
+            InitValue = 'KE';
+            // trigger OnValidate()
+            // begin
+            //ValidateCountry();
+            //  end;
         }
         field(130; "Occupation Code"; Option)
         {
@@ -122,48 +143,114 @@ table 50140 "Member Application"
 
     keys
     {
-        key(PK; "Application ID")
+        key(PK; Number)
         {
             Clustered = true;
         }
     }
 
     trigger OnInsert()
-    var
-        AppNoMgt: Codeunit "Application ID No. Mgt.";
     begin
         Status := Status::Pending;
         "Application Date" := Today;
-        if ("Application ID" = '') and (("First Name" <> '') or ("Last Name" <> '') or ("National ID/Passport Number" <> '') or (Email <> '') or ("Phone Number" <> '')) then
-            "Application ID" := AppNoMgt.GetNextNo();
+        if Country = '' then
+            Country := 'KE';
+        // SetPhonePrefix();
     end;
+    //Age validation
+    //local procedure ValidateDateOfBirth(DateOfBirth: Date)
+    //var
+    // MemberApplicationSetup: Record "Member Application Setup";
+    // BirthDate: Date;
+    //begin
+    //if DateOfBirth = 0D then
+    // exit;
 
-    local procedure ValidateDateOfBirth(DobText: Text[30])
-    var
-        MemberApplicationSetup: Record "Member Application Setup";
-        BirthDate: Date;
-    begin
-        if DobText = '' then
-            exit;
+    // BirthDate := DateOfBirth;
+    // if BirthDate > Today then
+    // Error('Date of birth cannot be in the future.');
 
-        if not Evaluate(BirthDate, DobText) then
-            Error('Enter a valid date in DD/MM/YYYY format.');
+    // if not MemberApplicationSetup.Get('DEFAULT') then begin
+    // MemberApplicationSetup.Init();
+    // MemberApplicationSetup."Primary Key" := 'DEFAULT';
+    //MemberApplicationSetup."Minimum Age" := 18;
+    // MemberApplicationSetup.Insert();
+    // end;
 
-        if BirthDate > Today then
-            Error('Date of birth cannot be in the future.');
+    // if BirthDate > CalcDate(StrSubstNo('<-%1Y>', MemberApplicationSetup."Minimum Age"), Today) then
+    // Error('Applicant must be at least %1 years old.', MemberApplicationSetup."Minimum Age");
+    // end;
 
-        if not MemberApplicationSetup.Get('DEFAULT') then begin
-            MemberApplicationSetup.Init();
-            MemberApplicationSetup."Primary Key" := 'DEFAULT';
-            MemberApplicationSetup."Minimum Age" := 18;
-            MemberApplicationSetup.Insert();
-        end;
+    //autofill phone prefix on country entry based on post code
+    //local procedure SetPhonePrefix()
+    //var
+    // PostalCodeLookup: Record "Postal Code Lookup";
+    //begin
+    //if ("Phone Number" = '') and (Country <> '') then begin
+    // PostalCodeLookup.SetRange(Country, Country);
+    // if PostalCodeLookup.FindFirst() then
+    //"Phone Number" := PostalCodeLookup."Phone Prefix";
+    // end;
+    // end;
 
-        if BirthDate > CalcDate(StrSubstNo('<-%1Y>', MemberApplicationSetup."Minimum Age"), Today) then
-            Error('Applicant must be at least %1 years old.', MemberApplicationSetup."Minimum Age");
-    end;
+    //local procedure ValidateCountry()
+    //begin
+    //if Country = '' then
+    // exit;
 
-    local procedure validatepersonname(Name: Text[20]; FieldName: Text[20])
+    // if (City <> '') and not ValidateCityLookup() then begin
+    // City := '';
+    //"Postal Code" := '';
+    // end;
+
+    // SetPhonePrefix();
+    // end;
+
+    // local procedure ValidateCity()
+    // begin
+    // if (City = '') or (Country = '') then
+    // exit;
+
+    // if not ValidateCityLookup() then
+    //  Error('City %1 is not valid for Country %2.', City, Country);
+
+    // UpdatePostalFromCity();
+    // end;
+
+    // local procedure ValidatePostalCode()
+    //var
+    // PostalCodeLookup: Record "Postal Code Lookup";
+    // begin
+    // if "Postal Code" = '' then
+    // exit;
+
+    // if not PostalCodeLookup.Get("Postal Code") then
+    //  Error('Postal code %1 is not valid.', "Postal Code");
+
+    // City := PostalCodeLookup.City;
+    //Country := PostalCodeLookup.Country;
+    // SetPhonePrefix();
+    //end;
+
+    // local procedure ValidateCityLookup(): Boolean
+    // var
+    // PostalCodeLookup: Record "Postal Code Lookup";
+    // begin
+    //if PostalCodeLookup.Get(Country, City) then begin
+    // exit(true);
+    // end;
+    // exit(false);
+    // end;
+
+    // local procedure UpdatePostalFromCity()
+    // var
+    //  PostalCodeLookup: Record "Postal Code Lookup";
+    //  begin
+    //  if PostalCodeLookup.Get(Country, City) then
+    //    "Postal Code" := PostalCodeLookup."Code";
+    // end;
+
+    local procedure ValidatePersonName(Name: Text[20]; FieldName: Text[20])
     var
         i: Integer;
         Character: Char;
@@ -171,32 +258,35 @@ table 50140 "Member Application"
     begin
         Name := DelChr(Name, '<>', '.');
         Name := DelChr(Name, '<>');
+
         if Name = '' then
             Error('%1 cannot be empty.', FieldName);
+
         PreviousCharacter := ' ';
+
         for i := 1 to StrLen(Name) do begin
             Character := Name[i];
-            if not (Character in ['A' .. 'Z', 'a' .. 'z', ' ', '-']) then
-                Error('%1 can contain only letters, spaces, and hyphens.', FieldName);
+
+            if not (Character in ['A' .. 'Z', 'a' .. 'z', ' ', '-', '''']) then
+                Error('%1 can contain only letters, spaces, hyphens, and apostrophes.', FieldName);
+
             if (Character = ' ') and (PreviousCharacter = ' ') then
                 Error('%1 cannot contain consecutive spaces.', FieldName);
+
+            if (Character = '-') and (PreviousCharacter = '-') then
+                Error('%1 cannot contain consecutive hyphens.', FieldName);
+
+            if (Character = '''') and (PreviousCharacter = '''') then
+                Error('%1 cannot contain consecutive apostrophes.', FieldName);
+
             PreviousCharacter := Character;
-            continue;
         end;
-        case Character of
-            '-':
-                begin
-                    if (Character = '-') and (PreviousCharacter = '-') then
-                        Error('%1 cannot contain consecutive hyphens.', FieldName);
-                end;
-            '''':
-                begin
-                    if (Character = '''') and (PreviousCharacter = '''') then
-                        Error('%1 cannot contain consecutive apostrophes.', FieldName);
-                end;
-            else
-                error('%1 contains an invalid character: %2.', FieldName, Character);
-        end;
+
+        if (Name[1] in ['-', '''']) then
+            Error('%1 cannot start with a hyphen or apostrophe.', FieldName);
+
+        if (Name[StrLen(Name)] in ['-', '''']) then
+            Error('%1 cannot end with a hyphen or apostrophe.', FieldName);
     end;
 
     local procedure ValidateIdentification(IdentificationNumber: Text[20]; FieldName: Text[20])
@@ -206,7 +296,7 @@ table 50140 "Member Application"
         case Identificationtype of
             "IdentificationType"::"National ID":
                 begin
-                    ///Length check
+                    //Length check
                     if not (StrLen("IdentificationNumber") in [7, 8]) then
                         Error('A National ID must contain 7 or 8 digits.');
 

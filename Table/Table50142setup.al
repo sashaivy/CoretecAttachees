@@ -7,6 +7,7 @@ table 50142 "Member Application Setup"
     {
         field(1; "Primary Key"; Code[20])
         {
+            InitValue = 'DEFAULT';
             Caption = 'Primary Key';
         }
         field(2; "Minimum Age"; Integer)

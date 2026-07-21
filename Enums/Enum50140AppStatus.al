@@ -16,9 +16,4 @@ enum 50100 "Application Status"
     {
         Caption = 'Rejected';
     }
-
-    value(3; Cancelled)
-    {
-        Caption = 'Cancelled';
-    }
 }

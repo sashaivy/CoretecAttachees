@@ -6,7 +6,10 @@ codeunit 50140 "Application ID No. Mgt."
         NextNo: Integer;
         DateTxt: Text[8];
         SeqTxt: Text[4];
+
+
     begin
+        DailyCounter.LockTable();
         if not DailyCounter.Get(Today) then begin
             DailyCounter.Init();
             DailyCounter.Date := Today;
