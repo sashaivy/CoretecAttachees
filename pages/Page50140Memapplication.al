@@ -24,7 +24,7 @@ page 50140 "Member Application Card"
                 Caption = 'Personal Information';
                 field("First Name"; Rec."First Name") { Tooltip = 'Enter the first name of the applicant.'; }
                 field("Last Name"; Rec."Last Name") { Tooltip = 'Enter the last name of the applicant.'; }
-                field("Date of Birth"; Rec."Date of Birth") { Tooltip = 'Enter the date of birth of the applicant in DDMMYYYY numeric format 01012006(DAYMONTHYEAR).'; }
+                field("Date of Birth"; Rec."Date of Birth") { Tooltip = 'Enter the date of birth of the applicant in YYYYMMDD numeric format 20060101(YEARMONTHDAY).'; }
                 field("Identificationtype"; Rec."Identificationtype") { Tooltip = 'Select the identification type of the applicant.'; }
                 field("National ID/Passport Number"; Rec."National ID/Passport Number") { Tooltip = 'Enter the ID or passport number without omissions.'; }
             }
@@ -58,16 +58,23 @@ page 50140 "Member Application Card"
     {
         area(Processing)
         {
-            action(Approve)
+            action(Submit)
             {
                 Caption = 'Approve';
                 Image = Approve;
-
+                Enabled = Rec.Status = Rec.Status::Pending;
                 trigger OnAction()
                 var
+                    FormEmail: Codeunit "Form Email Management";
                     ApprovalMgt: Codeunit "Approval Management";
                     MemberAppSetup: Record "Member Application Setup";
                 begin
+                    if Rec.Email = '' then
+                        Error('Email address is required to send for approval.');
+
+                    Rec.Status := Rec.Status::Pending;
+                    Rec.Modify();
+                    FormEmail.SendFormEmail(Rec, Enum::"Application Status"::Pending);
                     if MemberAppSetup.Get('DEFAULT') then
                         if MemberAppSetup."Approval Required" then
                             exit;

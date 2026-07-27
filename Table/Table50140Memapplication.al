@@ -43,10 +43,10 @@ table 50140 "Member Application"
         field(50; "Date of Birth"; Text[8])
         {
             Caption = 'Date of Birth';
-            // trigger OnValidate()
-            // begin
-            // ValidateDateOfBirth("Date of Birth");
-            // end;
+            trigger OnValidate()
+            begin
+                ValidateDateOfBirth("Date of Birth");
+            end;
         }
         field(51; "Identificationtype"; option)
         {
@@ -157,29 +157,50 @@ table 50140 "Member Application"
             Country := 'KE';
         // SetPhonePrefix();
     end;
-    //Age validation
-    //local procedure ValidateDateOfBirth(DateOfBirth: Date)
-    //var
-    // MemberApplicationSetup: Record "Member Application Setup";
-    // BirthDate: Date;
-    //begin
-    //if DateOfBirth = 0D then
-    // exit;
 
-    // BirthDate := DateOfBirth;
-    // if BirthDate > Today then
-    // Error('Date of birth cannot be in the future.');
+    local procedure ValidateDateOfBirth(DateOfBirthTxt: Text[8])
+    var
+        Setup: Record "Member Application Setup";
+        BirthYear: Integer;
+        BirthMonth: Integer;
+        BirthDay: Integer;
+        Age: Integer;
+    begin
+        if DateOfBirthTxt = '' then
+            exit;
 
-    // if not MemberApplicationSetup.Get('DEFAULT') then begin
-    // MemberApplicationSetup.Init();
-    // MemberApplicationSetup."Primary Key" := 'DEFAULT';
-    //MemberApplicationSetup."Minimum Age" := 18;
-    // MemberApplicationSetup.Insert();
-    // end;
+        if StrLen(DateOfBirthTxt) <> 8 then
+            Error('Date of Birth must be in YYYYMMDD format.');
 
-    // if BirthDate > CalcDate(StrSubstNo('<-%1Y>', MemberApplicationSetup."Minimum Age"), Today) then
-    // Error('Applicant must be at least %1 years old.', MemberApplicationSetup."Minimum Age");
-    // end;
+        if not Evaluate(BirthYear, CopyStr(DateOfBirthTxt, 1, 4)) then
+            Error('Invalid year.');
+
+        if not Evaluate(BirthMonth, CopyStr(DateOfBirthTxt, 5, 2)) then
+            Error('Invalid month.');
+
+        if not Evaluate(BirthDay, CopyStr(DateOfBirthTxt, 7, 2)) then
+            Error('Invalid day.');
+
+        if (BirthMonth < 1) or (BirthMonth > 12) then
+            Error('Invalid month.');
+
+        if (BirthDay < 1) or (BirthDay > 31) then
+            Error('Invalid day.');
+
+        if not Setup.Get('DEFAULT') then
+            Error('Member Application Setup is missing.');
+
+        Age := Date2DMY(Today, 3) - BirthYear;
+
+        if (BirthMonth > Date2DMY(Today, 2)) or
+           ((BirthMonth = Date2DMY(Today, 2)) and (BirthDay > Date2DMY(Today, 1))) then
+            Age -= 1;
+
+        if Age < Setup."Minimum Age" then
+            Error(
+                'Applicant must be at least %1 years old.',
+                Setup."Minimum Age");
+    end;
 
     //autofill phone prefix on country entry based on post code
     //local procedure SetPhonePrefix()

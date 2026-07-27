@@ -4,6 +4,7 @@ codeunit 50141 "Approval Management"
     var
         Setup: Record "Member Application Setup";
         AppNoMgt: Codeunit "Application ID No. Mgt.";
+        FormEmail: Codeunit "Form Email Management";
     begin
         Setup.Get('DEFAULT');
         if not Setup.Get('DEFAULT') then begin
@@ -30,6 +31,8 @@ codeunit 50141 "Approval Management"
 
             MemApplication.Modify(true);
 
+            FormEmail.SendFormEmail(MemApplication, Enum::"Application Status"::Approved);
+
             Message('Application approved successfully.');
             exit;
         end;
@@ -45,6 +48,8 @@ codeunit 50141 "Approval Management"
 
         MemApplication.Modify(true);
 
+        FormEmail.SendFormEmail(MemApplication, Enum::"Application Status"::Approved);
+
         Message('Application approved successfully.');
     end;
 
@@ -52,6 +57,7 @@ codeunit 50141 "Approval Management"
     var
         Setup: Record "Member Application Setup";
         ReasonBuffer: Record "Rejection Reason Buffer";
+        FormEmail: Codeunit "Form Email Management";
     begin
 
         if not Setup.Get('DEFAULT') then begin
@@ -79,6 +85,8 @@ codeunit 50141 "Approval Management"
         MemApplication."Rejection Reason" := ReasonBuffer."Reason";
 
         MemApplication.Modify(true);
+        FormEmail.SendFormEmail(MemApplication, Enum::"Application Status"::Rejected);
+
 
         Message('Application rejected.');
         exit;
