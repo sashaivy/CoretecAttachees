@@ -40,7 +40,7 @@ table 50140 "Member Application"
                 validatepersonname("Last Name", 'Last Name');
             end;
         }
-        field(50; "Date of Birth"; Text[8])
+        field(50; "Date of Birth"; Text[10])
         {
             Caption = 'Date of Birth';
             trigger OnValidate()
@@ -158,7 +158,7 @@ table 50140 "Member Application"
         // SetPhonePrefix();
     end;
 
-    local procedure ValidateDateOfBirth(DateOfBirthTxt: Text[8])
+    local procedure ValidateDateOfBirth(DateOfBirthTxt: Text[10])
     var
         Setup: Record "Member Application Setup";
         BirthYear: Integer;
@@ -169,16 +169,22 @@ table 50140 "Member Application"
         if DateOfBirthTxt = '' then
             exit;
 
-        if StrLen(DateOfBirthTxt) <> 8 then
-            Error('Date of Birth must be in YYYYMMDD format.');
+        if StrLen(DateOfBirthTxt) <> 10 then
+            Error('Date of Birth must be in YYYY/MM/DD format.');
 
         if not Evaluate(BirthYear, CopyStr(DateOfBirthTxt, 1, 4)) then
             Error('Invalid year.');
 
-        if not Evaluate(BirthMonth, CopyStr(DateOfBirthTxt, 5, 2)) then
+        if CopyStr(DateOfBirthTxt, 5, 1) <> '/' then
+            Error('The 5th character must be a "/".');
+
+        if not Evaluate(BirthMonth, CopyStr(DateOfBirthTxt, 6, 2)) then
             Error('Invalid month.');
 
-        if not Evaluate(BirthDay, CopyStr(DateOfBirthTxt, 7, 2)) then
+        if CopyStr(DateOfBirthTxt, 8, 1) <> '/' then
+            Error('The 5th character must be a "/".');
+
+        if not Evaluate(BirthDay, CopyStr(DateOfBirthTxt, 9, 2)) then
             Error('Invalid day.');
 
         if (BirthMonth < 1) or (BirthMonth > 12) then

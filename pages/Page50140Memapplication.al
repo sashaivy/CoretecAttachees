@@ -24,7 +24,7 @@ page 50140 "Member Application Card"
                 Caption = 'Personal Information';
                 field("First Name"; Rec."First Name") { Tooltip = 'Enter the first name of the applicant.'; }
                 field("Last Name"; Rec."Last Name") { Tooltip = 'Enter the last name of the applicant.'; }
-                field("Date of Birth"; Rec."Date of Birth") { Tooltip = 'Enter the date of birth of the applicant in YYYYMMDD numeric format 20060101(YEARMONTHDAY).'; }
+                field("Date of Birth"; Rec."Date of Birth") { Tooltip = 'Enter the date of birth of the applicant in YYYY/MM/DD numeric format 2006/01/01(YEAR/MONTH/DAY).'; }
                 field("Identificationtype"; Rec."Identificationtype") { Tooltip = 'Select the identification type of the applicant.'; }
                 field("National ID/Passport Number"; Rec."National ID/Passport Number") { Tooltip = 'Enter the ID or passport number without omissions.'; }
             }
