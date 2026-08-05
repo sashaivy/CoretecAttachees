@@ -119,7 +119,7 @@ table 50140 "Member Application"
         field(130; "Occupation Code"; Option)
         {
             Caption = 'Occupation Code';
-            OptionMembers = "Unemployed","Employed","Self-Employed","Student","Retired ","Other";
+            OptionMembers = "Unemployed","Employed","Self-Employed","Student","Retired","Other";
         }
         field(140; "Annual Income"; Decimal)
         {
