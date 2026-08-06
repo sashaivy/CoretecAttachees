@@ -4,33 +4,75 @@ pageextension 50146 "Extend Member List" extends "Member Approval App. List"
     {
         addlast(Processing)
         {
-            action(ImportXML)
+            group("XML Operations CodeUnit")
             {
-                caption = 'Import XML';
-                Image = Import;
-                promoted = true;
-                promotedCategory = Process;
-                applicationArea = All;
-                trigger OnAction()
-                var
-                    xmlImpexp: Codeunit "XMLimpexp";
-                begin
-                    xmlImpexp.Import();
-                end;
+                Caption = 'XML Operations (CodeUnit)';
+                //Image = XML;
+                action(ImportXML)
+                {
+                    caption = 'Import XML';
+                    Image = Import;
+                    promoted = true;
+                    promotedCategory = Process;
+                    applicationArea = All;
+                    trigger OnAction()
+                    var
+                        xmlImpexp: Codeunit "XMLimpexp";
+                    begin
+                        xmlImpexp.Import();
+                    end;
+
+                }
+                action(ExportXML)
+                {
+                    caption = 'Export XML';
+                    Image = Export;
+                    promoted = true;
+                    promotedCategory = Process;
+                    applicationArea = All;
+                    trigger OnAction()
+                    var
+                        xmlImpexp: Codeunit "XMLimpexp";
+                    begin
+                        xmlImpexp.Export();
+                        // Xmlport.Run(50100, true, false);
+                    end;
+                }
             }
-            action(ExportXML)
+            group("XML Operations (XML Port)")
             {
-                caption = 'Export XML';
-                Image = Export;
-                promoted = true;
-                promotedCategory = Process;
-                applicationArea = All;
-                trigger OnAction()
-                var
-                    xmlImpexp: Codeunit "XMLimpexp";
-                begin
-                    xmlImpexp.Export();
-                end;
+                Caption = 'XML Operations (XML Port)';
+
+                action(ImportXMLPort)
+                {
+                    Caption = 'Import XML (Port)';
+                    Image = Import;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    ApplicationArea = All;
+
+                    trigger OnAction()
+                    var
+                        MemberXmlPort: XmlPort "XMLDocument";
+                    begin
+                        MemberXmlPort.Import();
+                    end;
+                }
+                action(ExportXMLPort)
+                {
+                    Caption = 'Export XML (Port)';
+                    Image = Export;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    ApplicationArea = All;
+
+                    trigger OnAction()
+                    var
+                        MemberXmlPort: XmlPort "XMLDocument";
+                    begin
+                        MemberXmlPort.Export();
+                    end;
+                }
             }
         }
     }

@@ -92,29 +92,20 @@ table 50140 "Member Application"
         {
             Caption = 'City';
             TableRelation = "Post code".City;
-            //trigger OnValidate()
-            //  begin
-            //ValidateCity();
-            //  end;
+
         }
         field(110; "Postal Code"; Code[10])
         {
             Caption = 'Postal Code';
             TableRelation = "Post Code";
-            // trigger OnValidate()
-            // begin
-            // ValidatePostalCode();
-            // end;
+
         }
         field(120; Country; Code[10])
         {
             Caption = 'Country';
             TableRelation = "Country/Region";
             InitValue = 'KE';
-            // trigger OnValidate()
-            // begin
-            //ValidateCountry();
-            //  end;
+
         }
         field(130; "Occupation Code"; Option)
         {
@@ -208,74 +199,6 @@ table 50140 "Member Application"
                 Setup."Minimum Age");
     end;
 
-    //autofill phone prefix on country entry based on post code
-    //local procedure SetPhonePrefix()
-    //var
-    // PostalCodeLookup: Record "Postal Code Lookup";
-    //begin
-    //if ("Phone Number" = '') and (Country <> '') then begin
-    // PostalCodeLookup.SetRange(Country, Country);
-    // if PostalCodeLookup.FindFirst() then
-    //"Phone Number" := PostalCodeLookup."Phone Prefix";
-    // end;
-    // end;
-
-    //local procedure ValidateCountry()
-    //begin
-    //if Country = '' then
-    // exit;
-
-    // if (City <> '') and not ValidateCityLookup() then begin
-    // City := '';
-    //"Postal Code" := '';
-    // end;
-
-    // SetPhonePrefix();
-    // end;
-
-    // local procedure ValidateCity()
-    // begin
-    // if (City = '') or (Country = '') then
-    // exit;
-
-    // if not ValidateCityLookup() then
-    //  Error('City %1 is not valid for Country %2.', City, Country);
-
-    // UpdatePostalFromCity();
-    // end;
-
-    // local procedure ValidatePostalCode()
-    //var
-    // PostalCodeLookup: Record "Postal Code Lookup";
-    // begin
-    // if "Postal Code" = '' then
-    // exit;
-
-    // if not PostalCodeLookup.Get("Postal Code") then
-    //  Error('Postal code %1 is not valid.', "Postal Code");
-
-    // City := PostalCodeLookup.City;
-    //Country := PostalCodeLookup.Country;
-    // SetPhonePrefix();
-    //end;
-
-    // local procedure ValidateCityLookup(): Boolean
-    // var
-    // PostalCodeLookup: Record "Postal Code Lookup";
-    // begin
-    //if PostalCodeLookup.Get(Country, City) then begin
-    // exit(true);
-    // end;
-    // exit(false);
-    // end;
-
-    // local procedure UpdatePostalFromCity()
-    // var
-    //  PostalCodeLookup: Record "Postal Code Lookup";
-    //  begin
-    //  if PostalCodeLookup.Get(Country, City) then
-    //    "Postal Code" := PostalCodeLookup."Code";
-    // end;
 
     local procedure ValidatePersonName(Name: Text[20]; FieldName: Text[20])
     var

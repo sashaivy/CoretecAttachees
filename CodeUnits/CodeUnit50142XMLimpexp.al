@@ -6,16 +6,18 @@ codeunit 50142 XMLimpexp
         FromFile: Text; //Choose the file to import
         InStream: InStream; //Stream to read the file
         XMLDoc: XmlDocument; //XML document data type
-        Tab: XMLelement;
-        nodelist: XmlNodeList;
-        nodee: XmlNode;
+        Tab: XMLelement; //root element of the XML document
+        nodelist: XmlNodeList; //list of nodes in the XML document
+        nodee: XmlNode; //individual node in the XML document
         nodee1: XmlNode;
-        nodee2: XmlNode;
-        nodelistsec: XmlNodeList;
+        //nodee2: XmlNode;
+        //nodelistsec: XmlNodeList;
         //FileManagement: Codeunit "File Management";
-        rec: Record "Member Application";
+        //rec: Record "Member Application";
         i: Integer;
-        TempNode: XmlNode;
+        //TempNode: XmlNode;
+        ImportedCount: Integer;
+        ImportErrors: Integer;
     begin
         if not UploadIntoStream('upload XML file', '', 'xml', FromFile, InStream) then
             exit;
@@ -24,79 +26,109 @@ codeunit 50142 XMLimpexp
         Tab.SelectNodes('//MemberApplication', nodelist);
         for i := 0 to nodelist.Count() - 1 do begin
             NodeList.Get(i, nodee);
-            if nodee.SelectSingleNode('MemberApplicationDetails', nodee1) then begin
-                rec.Init();
+            if Nodee.SelectSingleNode('MemberApplicationDetails', Nodee1) then begin
 
-                if nodee1.SelectSingleNode('FirstName', nodee2) then
-                    rec."First Name" := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('LastName', nodee2) then
-                    rec."Last Name" := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('DateOfBirth', nodee2) then
-                    rec."Date of Birth" := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('IdentificationType', nodee2) then
-                    case UpperCase(nodee2.AsXmlElement().InnerText()) of
-                        'PASSPORT':
-                            rec."Identificationtype" := rec."Identificationtype"::"Passport Number";
-                        'NATIONALID', 'NATIONAL_ID':
-                            rec."Identificationtype" := rec."Identificationtype"::"National ID";
-                    end;
-
-                if nodee1.SelectSingleNode('NationalIDPassportNumber', nodee2) then
-                    rec."National ID/Passport Number" := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('Email', nodee2) then
-                    rec.Email := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('PhoneNumber', nodee2) then
-                    rec."Phone Number" := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('Address', nodee2) then
-                    rec.Address := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('City', nodee2) then
-                    rec.City := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('PostCode', nodee2) then
-                    rec."Postal Code" := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('Country', nodee2) then
-                    rec.Country := nodee2.AsXmlElement().InnerText();
-
-                if nodee1.SelectSingleNode('OccupationCode', nodee2) then
-                    case UpperCase(nodee2.AsXmlElement().InnerText()) of
-                        'EMPLOYED':
-                            rec."Occupation Code" := rec."Occupation Code"::Employed;
-                        'SELF-EMPLOYED':
-                            rec."Occupation Code" := rec."Occupation Code"::"Self-Employed";
-                        'STUDENT':
-                            rec."Occupation Code" := rec."Occupation Code"::Student;
-                        'UNEMPLOYED':
-                            rec."Occupation Code" := rec."Occupation Code"::Unemployed;
-                        'RETIRED':
-                            rec."Occupation Code" := rec."Occupation Code"::Retired;
-                    end;
-
-                if nodee1.SelectSingleNode('AnnualIncome', nodee2) then
-                    Evaluate(rec."Annual Income", nodee2.AsXmlElement().InnerText());
-
-                if nodee1.SelectSingleNode('MemberCategory', nodee2) then
-                    case UpperCase(nodee2.AsXmlElement().InnerText()) of
-                        'Standard':
-                            rec."Member Category" := rec."Member Category"::Standard;
-                        'PREMIUM':
-                            rec."Member Category" := rec."Member Category"::Premium;
-                        'GOLD':
-                            rec."Member Category" := rec."Member Category"::Gold;
-                        'PLATINUM':
-                            rec."Member Category" := rec."Member Category"::Platinum;
-                    end;
-                rec.Insert(true);
+                if TryImportOneMember(Nodee1) then
+                    ImportedCount += 1
+                else
+                    ImportErrors += 1;
+                // Store or display GetLastErrorText()
             end;
         end;
-        Message('Import completed successfully.');
+        Message('Import complete.\Imported: %1\Failed: %2', ImportedCount, ImportErrors);
+    end;
+
+    [TryFunction]
+    local procedure TryImportOneMember(Nodee1: XmlNode)
+    var
+        Rec: Record "Member Application";
+        Nodee2: XmlNode;
+    begin
+        Rec.Init();
+
+        if Nodee1.SelectSingleNode('FirstName', Nodee2) then
+            Rec.Validate("First Name", Nodee2.AsXmlElement().InnerText());
+
+        if Nodee1.SelectSingleNode('LastName', Nodee2) then
+            Rec.Validate("Last Name", Nodee2.AsXmlElement().InnerText());
+
+        if Nodee1.SelectSingleNode('DateOfBirth', Nodee2) then
+            Rec.Validate("Date of Birth", Nodee2.AsXmlElement().InnerText());
+
+        if Nodee1.SelectSingleNode('IdentificationType', Nodee2) then
+            case UpperCase(Nodee2.AsXmlElement().InnerText()) of
+                'PASSPORT':
+                    Rec.Validate(
+                        "Identificationtype",
+                        Rec."Identificationtype"::"Passport Number");
+
+                'NATIONALID',
+                'NATIONAL_ID':
+                    Rec.Validate(
+                        "Identificationtype",
+                        Rec."Identificationtype"::"National ID");
+            end;
+
+        if Nodee1.SelectSingleNode('NationalIDPassportNumber', Nodee2) then
+            Rec.Validate("National ID/Passport Number", Nodee2.AsXmlElement().InnerText());
+
+        if Nodee1.SelectSingleNode('Email', Nodee2) then
+            Rec.Validate(Email, Nodee2.AsXmlElement().InnerText());
+
+        if Nodee1.SelectSingleNode('PhoneNumber', Nodee2) then
+            Rec."Phone Number" := Nodee2.AsXmlElement().InnerText();
+
+        if Nodee1.SelectSingleNode('Address', Nodee2) then
+            Rec.Address := Nodee2.AsXmlElement().InnerText();
+
+        if Nodee1.SelectSingleNode('City', Nodee2) then
+            Rec.City := Nodee2.AsXmlElement().InnerText();
+
+        if Nodee1.SelectSingleNode('PostCode', Nodee2) then
+            Rec."Postal Code" := Nodee2.AsXmlElement().InnerText();
+
+        if Nodee1.SelectSingleNode('Country', Nodee2) then
+            Rec.Country := Nodee2.AsXmlElement().InnerText();
+
+        if Nodee1.SelectSingleNode('OccupationCode', Nodee2) then
+            case UpperCase(Nodee2.AsXmlElement().InnerText()) of
+                'EMPLOYED':
+                    Rec."Occupation Code" := Rec."Occupation Code"::Employed;
+
+                'SELF-EMPLOYED':
+                    Rec."Occupation Code" := Rec."Occupation Code"::"Self-Employed";
+
+                'STUDENT':
+                    Rec."Occupation Code" := Rec."Occupation Code"::Student;
+
+                'UNEMPLOYED':
+                    Rec."Occupation Code" := Rec."Occupation Code"::Unemployed;
+
+                'RETIRED':
+                    Rec."Occupation Code" := Rec."Occupation Code"::Retired;
+            end;
+
+        if Nodee1.SelectSingleNode('AnnualIncome', Nodee2) then
+            Evaluate(
+                Rec."Annual Income",
+                Nodee2.AsXmlElement().InnerText());
+
+        if Nodee1.SelectSingleNode('MemberCategory', Nodee2) then
+            case UpperCase(Nodee2.AsXmlElement().InnerText()) of
+                'STANDARD':
+                    Rec."Member Category" := Rec."Member Category"::Standard;
+
+                'PREMIUM':
+                    Rec."Member Category" := Rec."Member Category"::Premium;
+
+                'GOLD':
+                    Rec."Member Category" := Rec."Member Category"::Gold;
+
+                'PLATINUM':
+                    Rec."Member Category" := Rec."Member Category"::Platinum;
+            end;
+
+        Rec.Insert(true);
     end;
 
     procedure export()
@@ -125,6 +157,7 @@ codeunit 50142 XMLimpexp
 
                 Node1 := XmlElement.Create('MemberApplicationDetails');
 
+
                 Node1.Add(XmlElement.Create('FirstName', Rec."First Name"));
 
                 Node1.Add(XmlElement.Create('LastName', Rec."Last Name"));
@@ -133,9 +166,9 @@ codeunit 50142 XMLimpexp
 
                 Node1.Add(XmlElement.Create('IdentificationType', Format(Rec."Identificationtype")));
 
-                Node.Add(XmlElement.Create('NationalIDPassportNumber', Rec."National ID/Passport Number"));
+                Node1.Add(XmlElement.Create('NationalIDPassportNumber', Rec."National ID/Passport Number"));
 
-                Node.Add(XmlElement.Create('Email', Rec.Email));
+                Node1.Add(XmlElement.Create('Email', Rec.Email));
 
                 Node1.Add(XmlElement.Create('PhoneNumber', Rec."Phone Number"));
 
@@ -145,9 +178,9 @@ codeunit 50142 XMLimpexp
 
                 Node1.Add(XmlElement.Create('PostCode', Rec."Postal Code"));
 
-                Node.Add(XmlElement.Create('Country', Rec.Country));
+                Node1.Add(XmlElement.Create('Country', Rec.Country));
 
-                Node.Add(XmlElement.Create('OccupationCode', Format(Rec."Occupation Code")));
+                Node1.Add(XmlElement.Create('OccupationCode', Format(Rec."Occupation Code")));
 
                 Node1.Add(XmlElement.Create('AnnualIncome', Format(Rec."Annual Income")));
 
