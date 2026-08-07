@@ -7,22 +7,22 @@ pageextension 50146 "Extend Member List" extends "Member Approval App. List"
             group("XML Operations CodeUnit")
             {
                 Caption = 'XML Operations (CodeUnit)';
-                //Image = XML;
-                action(ImportXML)
-                {
-                    caption = 'Import XML';
-                    Image = Import;
-                    promoted = true;
-                    promotedCategory = Process;
-                    applicationArea = All;
-                    trigger OnAction()
-                    var
-                        xmlImpexp: Codeunit "XMLimpexp";
-                    begin
-                        xmlImpexp.Import();
-                    end;
+                //Commented out due to the code unit running into a tenent error i cannot pinpoint
+                // action(ImportXML)
+                // {
+                //     caption = 'Import XML';
+                //     Image = Import;
+                //     promoted = true;
+                //     promotedCategory = Process;
+                //     applicationArea = All;
+                //     trigger OnAction()
+                //     var
+                //         xmlImpexp: Codeunit "XMLimpexp";
+                //     begin
+                //         xmlImpexp.Import();
+                //     end;
 
-                }
+                // }
                 action(ExportXML)
                 {
                     caption = 'Export XML';
@@ -35,7 +35,7 @@ pageextension 50146 "Extend Member List" extends "Member Approval App. List"
                         xmlImpexp: Codeunit "XMLimpexp";
                     begin
                         xmlImpexp.Export();
-                        // Xmlport.Run(50100, true, false);
+
                     end;
                 }
             }
@@ -55,7 +55,7 @@ pageextension 50146 "Extend Member List" extends "Member Approval App. List"
                     var
                         MemberXmlPort: XmlPort "XMLDocument";
                     begin
-                        MemberXmlPort.Import();
+                        MemberXmlPort.Run();
                     end;
                 }
                 action(ExportXMLPort)
@@ -70,8 +70,42 @@ pageextension 50146 "Extend Member List" extends "Member Approval App. List"
                     var
                         MemberXmlPort: XmlPort "XMLDocument";
                     begin
-                        MemberXmlPort.Export();
+                        XmlPort.Run(XmlPort::"XMLDocument", false, false);
                     end;
+                }
+                group("CSV Operations (CSV Port)")
+                {
+                    Caption = 'CSV Operations (CSV Port)';
+                    action(ImportCSVPort)
+                    {
+                        Caption = 'Import CSV (Port)';
+                        Image = Import;
+                        Promoted = true;
+                        PromotedCategory = Process;
+                        ApplicationArea = All;
+
+                        trigger OnAction()
+                        var
+                            MemberXmlPort: XmlPort "CSVXMLPort";
+                        begin
+                            MemberXmlPort.Run();
+                        end;
+                    }
+                    action(ExportCSVPort)
+                    {
+                        Caption = 'Export CSV (Port)';
+                        Image = Export;
+                        Promoted = true;
+                        PromotedCategory = Process;
+                        ApplicationArea = All;
+
+                        trigger OnAction()
+                        var
+                            MemberXmlPort: XmlPort "CSVXMLPort";
+                        begin
+                            XmlPort.Run(XmlPort::"CSVXMLPort", false, false);
+                        end;
+                    }
                 }
             }
         }

@@ -3,6 +3,8 @@ codeunit 50142 XMLimpexp
     procedure Import()
 
     var
+        TempBlob: Codeunit "Temp Blob";
+        FileManagement: Codeunit "File Management";
         FromFile: Text; //Choose the file to import
         InStream: InStream; //Stream to read the file
         XMLDoc: XmlDocument; //XML document data type
@@ -10,30 +12,34 @@ codeunit 50142 XMLimpexp
         nodelist: XmlNodeList; //list of nodes in the XML document
         nodee: XmlNode; //individual node in the XML document
         nodee1: XmlNode;
-        //nodee2: XmlNode;
-        //nodelistsec: XmlNodeList;
-        //FileManagement: Codeunit "File Management";
         //rec: Record "Member Application";
         i: Integer;
-        //TempNode: XmlNode;
         ImportedCount: Integer;
         ImportErrors: Integer;
     begin
-        if not UploadIntoStream('upload XML file', '', 'xml', FromFile, InStream) then
+        //if not uploadstream (TempBlob, 'Upload XML file', '', 'XML Files (*.xml)|*.xml') then
+        FromFile := FileManagement.BLOBImportWithFilter(TempBlob, 'Upload XML file', '', 'XML Files (*.xml)|*.xml', 'xml');
+        if FromFile = '' then
             exit;
-        XmlDocument.ReadFrom(InStream, xmlDoc);
-        xmlDoc.GetRoot(Tab);
+        Message('Upload OK');
+        // XmlDocument.ReadFrom(InStream, XMLDoc);
+        tempBlob.CreateInStream(InStream);
+        if not XmlDocument.ReadFrom(InStream, XMLDoc) then
+            error('Invalid XML format. Unable to read the XML file.');
+        if not XMLDoc.GetRoot(Tab) then
+            error('Invalid XML format. Root element not found.');
         Tab.SelectNodes('//MemberApplication', nodelist);
-        for i := 0 to nodelist.Count() - 1 do begin
-            NodeList.Get(i, nodee);
-            if Nodee.SelectSingleNode('MemberApplicationDetails', Nodee1) then begin
+        if NodeList.Count() = 0 then
+            Error('No MemberApplication nodes were found in the XML file.');
 
-                if TryImportOneMember(Nodee1) then
-                    ImportedCount += 1
-                else
-                    ImportErrors += 1;
-                // Store or display GetLastErrorText()
-            end;
+        ImportedCount := 0;
+        ImportErrors := 0;
+        for i := nodelist.Count() downto 1 do begin
+            nodelist.Get(i, nodee);
+            if TryImportOneMember(nodee) then
+                ImportedCount += 1
+            else
+                ImportErrors += 1;
         end;
         Message('Import complete.\Imported: %1\Failed: %2', ImportedCount, ImportErrors);
     end;

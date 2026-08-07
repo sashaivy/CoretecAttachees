@@ -160,6 +160,13 @@ table 50140 "Member Application"
         if DateOfBirthTxt = '' then
             exit;
 
+        if not Setup.Get('DEFAULT') then begin
+            Setup.Init();
+            Setup."Primary Key" := 'DEFAULT';
+            Setup."Minimum Age" := 18;
+            Setup.Insert();
+        end;
+
         if StrLen(DateOfBirthTxt) <> 10 then
             Error('Date of Birth must be in YYYY/MM/DD format.');
 

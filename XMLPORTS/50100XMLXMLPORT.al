@@ -1,13 +1,13 @@
 xmlport 50100 XMLDocument
 {
-    caption = 'My XMLport';
+    caption = 'My XMLport for XML Documents';
     format = Xml;
     direction = both;
     UseDefaultNamespace = false;
     Userequestpage = true;
     schema
     {
-        textelement(Member)
+        textelement(Applications)
         {
             tableelement(MemberApplication; "Member Application")
             {
@@ -29,7 +29,7 @@ xmlport 50100 XMLDocument
                     fieldelement(NationalIDPassportNumber; Memberapplication."National ID/Passport Number")
                     {
                     }
-                    fieldelement(EmailAddress; Memberapplication."Email")
+                    fieldelement(Email; Memberapplication."Email")
                     {
                     }
                     fieldelement(PhoneNumber; Memberapplication."Phone Number")
@@ -50,10 +50,10 @@ xmlport 50100 XMLDocument
                     fieldelement(OccupationCode; Memberapplication."Occupation Code")
                     {
                     }
-                    fieldelement(annualIncome; Memberapplication."Annual Income")
+                    fieldelement(AnnualIncome; Memberapplication."Annual Income")
                     {
                     }
-                    fieldelement(membercategory; Memberapplication."Member Category")
+                    fieldelement(MemberCategory; Memberapplication."Member Category")
                     {
                     }
 
@@ -62,16 +62,18 @@ xmlport 50100 XMLDocument
                 begin
                     if not TryValidateMember(MemberApplication) then begin
                         ImportErrors += 1;
-                        if SkipInvalidRows then
-                            CurrXMLport.Skip()
-                        else
+
+                        if SkipInvalidRows then begin
+                            Message(
+                              'Skipping %1 %2. Reason: %3',
+                              MemberApplication."First Name",
+                              MemberApplication."Last Name",
+                              GetLastErrorText());
+
+                            CurrXMLPort.Skip();
+                        end else
                             Error(GetLastErrorText());
                     end;
-                end;
-
-                trigger OnAfterInsertRecord()
-                begin
-                    ImportedCount += 1;
                 end;
             }
         }
